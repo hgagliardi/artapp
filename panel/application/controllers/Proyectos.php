@@ -7,6 +7,7 @@ class Proyectos extends CI_Controller {
 			parent::__construct();
 			$this->load->helper('url');
 			$this->load->model('proyectos/proyectos_model', '', TRUE);
+			//error_reporting(0);
 	}
 
 	public function index()
@@ -17,6 +18,12 @@ class Proyectos extends CI_Controller {
 				$fotoPrincipal = $this->proyectos_model->get_proyectos_fotoprincipal($proyecto->proyectos_principal);
 				$proyecto->fotoPrincipal = URL_SITIO . 'fotos/' . $proyecto->proyectos_id . '/' . $fotoPrincipal[0]->items_filename;
 		}
+		$array['proyectos_inactivos'] = $this->proyectos_model->get_proyectos_inactivos();
+		foreach ($array['proyectos_inactivos'] as &$proyecto_inactivo) {
+				$proyecto_inactivo->categorias = $this->proyectos_model->get_proyectos_categories($proyecto_inactivo->proyectos_id);
+				$fotoPrincipal = $this->proyectos_model->get_proyectos_fotoprincipal($proyecto_inactivo->proyectos_principal);
+				$proyecto_inactivo->fotoPrincipal = URL_SITIO . 'fotos/' . $proyecto_inactivo->proyectos_id . '/' . $fotoPrincipal[0]->items_filename;
+		}
 
     $this->load->view('proyectos/header');
     $this->load->view('proyectos/header-menu');
@@ -24,18 +31,62 @@ class Proyectos extends CI_Controller {
     $this->load->view('proyectos/index', $array);
 		$this->load->view('proyectos/footer');
 	}
+	public function borrar($proyectoId)
+	{
 
+		$this->proyectos_model->borrar_proyecto($proyectoId);
+
+		$array['proyectos'] = $this->proyectos_model->get_proyectos();
+		foreach ($array['proyectos'] as &$proyecto) {
+				$proyecto->categorias = $this->proyectos_model->get_proyectos_categories($proyecto->proyectos_id);
+				$fotoPrincipal = $this->proyectos_model->get_proyectos_fotoprincipal($proyecto->proyectos_principal);
+				$proyecto->fotoPrincipal = URL_SITIO . 'fotos/' . $proyecto->proyectos_id . '/' . $fotoPrincipal[0]->items_filename;
+		}
+		$array['proyectos_inactivos'] = $this->proyectos_model->get_proyectos_inactivos();
+		foreach ($array['proyectos_inactivos'] as &$proyecto_inactivo) {
+				$proyecto_inactivo->categorias = $this->proyectos_model->get_proyectos_categories($proyecto_inactivo->proyectos_id);
+				$fotoPrincipal = $this->proyectos_model->get_proyectos_fotoprincipal($proyecto_inactivo->proyectos_principal);
+				$proyecto_inactivo->fotoPrincipal = URL_SITIO . 'fotos/' . $proyecto_inactivo->proyectos_id . '/' . $fotoPrincipal[0]->items_filename;
+		}
+
+		$this->load->view('proyectos/header');
+    $this->load->view('proyectos/header-menu');
+    $this->load->view('proyectos/sidebar');
+    $this->load->view('proyectos/index', $array);
+		$this->load->view('proyectos/footer');
+	}
+	public function activar($proyectoId)
+	{
+
+		$this->proyectos_model->activar_proyecto($proyectoId);
+
+		$array['proyectos'] = $this->proyectos_model->get_proyectos();
+		foreach ($array['proyectos'] as &$proyecto) {
+				$proyecto->categorias = $this->proyectos_model->get_proyectos_categories($proyecto->proyectos_id);
+				$fotoPrincipal = $this->proyectos_model->get_proyectos_fotoprincipal($proyecto->proyectos_principal);
+				$proyecto->fotoPrincipal = URL_SITIO . 'fotos/' . $proyecto->proyectos_id . '/' . $fotoPrincipal[0]->items_filename;
+		}
+		$array['proyectos_inactivos'] = $this->proyectos_model->get_proyectos_inactivos();
+		foreach ($array['proyectos_inactivos'] as &$proyecto_inactivo) {
+				$proyecto_inactivo->categorias = $this->proyectos_model->get_proyectos_categories($proyecto_inactivo->proyectos_id);
+				$fotoPrincipal = $this->proyectos_model->get_proyectos_fotoprincipal($proyecto_inactivo->proyectos_principal);
+				$proyecto_inactivo->fotoPrincipal = URL_SITIO . 'fotos/' . $proyecto_inactivo->proyectos_id . '/' . $fotoPrincipal[0]->items_filename;
+		}
+
+		$this->load->view('proyectos/header');
+    $this->load->view('proyectos/header-menu');
+    $this->load->view('proyectos/sidebar');
+    $this->load->view('proyectos/index', $array);
+		$this->load->view('proyectos/footer');
+	}
 	public function editar($proyectoId)
 	{
 
-		error_reporting(0);
 		if(isset($_POST['guardar'])){
 
 			$this->load->model('file');
 
 			$categorias = $this->input->post('proyecto_categorias');
-
-
 
 			$config['upload_path'] = '../fotos/' . $proyectoId;
       $config['allowed_types'] = 'gif|jpg|png|jpeg';
@@ -45,7 +96,7 @@ class Proyectos extends CI_Controller {
 			$this->load->library('upload', $config);
 			$this->upload->initialize($config);
 
-			$files = $_FILES;
+			$this->subir($_FILES);
 	    $cpt = count($_FILES['upload']['name']);
 	    for($i=0; $i<$cpt; $i++)
 	    {
@@ -93,13 +144,12 @@ class Proyectos extends CI_Controller {
 		$catProyecto = array();
 		foreach ($categorias_proyecto as $k) {
 			array_push($catProyecto, $k->categoria_id);
-//			$catProyecto[] = $k->categoria_id;
 		}
 		$array['proyecto']->categorias_proyecto = $catProyecto;
 
 
 		$fotoPrincipal = $this->proyectos_model->get_proyectos_fotoprincipal($array['proyecto']->proyectos_principal);
-		$array['proyecto']->fotoPrincipal = URL_SITIO . 'fotos/' . $array['proyecto']->proyectos_id . '/' . $fotoPrincipal->items_filename;
+		$array['proyecto']->fotoPrincipal = URL_SITIO . 'fotos/' . $array['proyecto']->proyectos_id . '/' . $fotoPrincipal[0]->items_filename;
 		$array['proyecto']->items = $this->proyectos_model->get_fotos_por_proyecto($proyectoId);
 
 		$this->load->view('proyectos/header');

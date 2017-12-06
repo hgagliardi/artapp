@@ -3,12 +3,12 @@ class Proyectos_model extends CI_Model {
 
         public function get_proyectos()
         {
-                $query = $this->db->get('proyectos');
+                $query = $this->db->get_where('proyectos', array('proyectos_activo' => 1));
                 return $query->result();
         }
-        public function get_proyectos_limit($limit1, $limit2)
+        public function get_proyectos_inactivos()
         {
-                $query = $this->db->get('proyectos', $limit1, $limit2);
+                $query = $this->db->get_where('proyectos', array('proyectos_activo' => 0));
                 return $query->result();
         }
         public function get_proyecto_por_id($proyectoId)
@@ -16,6 +16,7 @@ class Proyectos_model extends CI_Model {
                   $sql = "SELECT *
                           FROM proyectos
                           WHERE proyectos_id = '$proyectoId'
+                          AND proyectos_activo = 1
                           LIMIT 1";
 
                   $query = $this->db->query($sql);
@@ -55,6 +56,12 @@ class Proyectos_model extends CI_Model {
                 $result = $query->result();
                 return $result;
         }
+        public function borrar_proyecto($proyectoId)
+        {
+                $this->proyectos_activo = 0;
+                $this->db->update('proyectos', $this, array('proyectos_id' => $proyectoId));
+
+        }
         public function insertar_proyecto($nombre, $descripcion, $principal, $subido)
         {
                 $this->proyectos_nombre = $nombre;
@@ -84,6 +91,13 @@ class Proyectos_model extends CI_Model {
                 );
 
                 $this->db->insert('proyectos_categorias', $data);
+        }
+        public function activar_proyecto($proyectoId)
+        {
+                $this->db->where('proyectos_id', $proyectoId);
+                $this->db->update('proyectos', array(
+                  'proyectos_activo' => 1
+                ));
         }
 
 }
