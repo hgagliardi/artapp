@@ -85,14 +85,14 @@
                                                                                      background-size: cover;
                                                                                      background-position: center;">
                                                                         </div>
-                                                                        <div class="mt-card-content">
+                                                                        <div class='mt-card-content <?= ($i->items_id == $proyecto->proyectos_principal) ? "principal" : "" ;?>'>
                                                                             <h3 class="mt-card-name">
                                                                               <?= $i->items_titulo; ?>
                                                                               <?php // echo ($i->items_id == $proyecto->proyectos_principal) ? '<i aria-hidden="true" class="fa fa-star"></i>' : ''; ?>
                                                                             </h3>
                                                                             <p class="mt-card-desc font-grey-mint"><?= $i->items_descripcion; ?></p>
                                                                             <?php if($i->items_id != $proyecto->proyectos_principal){ ?>
-                                                                              <a style="margin-bottom: 20px;" href="javascript:;" class="btn btn-sm blue"> Elegir como principal
+                                                                              <a style="margin-bottom: 20px;" onClick="set_foto_principal(<?= $proyecto->proyectos_id; ?>, <?= $i->items_id; ?>)" class="btn btn-sm blue"> Elegir como principal
                                                                                 <i class="fa fa-star"></i>
                                                                               </a>
                                                                             <?php } ?>
@@ -152,3 +152,16 @@
             </div>
             <!-- END FOOTER -->
         </div>
+
+        <script type="text/javascript">
+          function set_foto_principal(proyectoId, fotoId){
+
+            var url = '<?= base_url(); ?>';
+
+            $.post( url + "Proyectos/set_principal", { proyectoId: proyectoId, fotoId: fotoId })
+              .done(function( data ) {
+
+              });
+
+          }
+        </script>

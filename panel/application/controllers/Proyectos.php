@@ -160,5 +160,15 @@ class Proyectos extends CI_Controller {
 
 	}
 
+	public function set_principal(){
+
+		$proyectoId = $_POST['proyectoId'];
+		$fotoId = $_POST['fotoId'];
+
+		$this->db->set('proyectos_principal', $fotoId);
+		$this->db->where('proyectos_id', $proyectoId);
+		$this->db->update('proyectos');
+	}
+
 
 }
