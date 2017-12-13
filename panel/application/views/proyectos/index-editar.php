@@ -73,6 +73,18 @@
                                                             <label for="proyecto_descripcion">Descripción</label>
                                                         </div>
 
+                                                        <div class="m-heading-1 border-green m-bordered">
+                                                            <h3><i class="fa fa-camera" style="margin-right:10px;" aria-hidden="true"></i>Subir más fotos</h3>
+                                                            <p> Acá podes subir más fotos para el <b><?= $proyecto->proyectos_nombre; ?></b> </p>
+
+                                                        </div>
+                                                        <div style="margin-bottom: 20px;">
+                                                            <input type="file" name="upload[]" id="upload" class="inputfile inputfile-1" data-multiple-caption="{count} archivos seleccionados" multiple />
+                                                            <label for="upload">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="iborrainputfile" width="20" height="17" viewBox="0 0 20 17"><path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path></svg>
+                                                            <span class="iborrainputfile">Seleccionar archivos</span>
+                                                            </label>
+                                                        </div>
 
                                                         <div class="mt-element-card mt-element-overlay">
                                                             <div class="row">
@@ -85,18 +97,16 @@
                                                                                      background-size: cover;
                                                                                      background-position: center;">
                                                                         </div>
-                                                                        <div class='mt-card-content <?= ($i->items_id == $proyecto->proyectos_principal) ? "principal" : "" ;?>'>
+                                                                        <div class='mt-card-content <?= ($i->items_id == $proyecto->proyectos_principal) ? "principal" : "" ;?>' style="padding-bottom: 20px;">
                                                                             <h3 class="mt-card-name">
                                                                               <?= $i->items_titulo; ?>
                                                                               <?php // echo ($i->items_id == $proyecto->proyectos_principal) ? '<i aria-hidden="true" class="fa fa-star"></i>' : ''; ?>
                                                                             </h3>
                                                                             <p class="mt-card-desc font-grey-mint"><?= $i->items_descripcion; ?></p>
-                                                                            <?php if($i->items_id != $proyecto->proyectos_principal){ ?>
-                                                                              <a style="margin-bottom: 20px;" onClick="set_foto_principal(<?= $proyecto->proyectos_id; ?>, <?= $i->items_id; ?>)" class="btn btn-sm blue"> Elegir como principal
+                                                                              <a <?= ($i->items_id == $proyecto->proyectos_principal) ? 'style="display:none;"' : ''; ?> id="<?= $i->items_id; ?>" class="set_principal btn btn-sm blue"> Elegir como principal
                                                                                 <i class="fa fa-star"></i>
                                                                               </a>
-                                                                            <?php } ?>
-                                                                            <a style="margin-bottom: 20px;" href="" class="btn btn-sm red"> Borrar
+                                                                            <a id="borrar-<?= $i->items_id; ?>" class="btn btn-sm red btn-borrar"> Borrar
                                                                               <i class="fa fa-times"></i>
                                                                             </a>
 
@@ -105,16 +115,6 @@
                                                                 </div><!-- FIN PROYECTO-ITEM -->
                                                               <?php } ?>
                                                             </div>
-                                                          </div>
-
-                                                          <div class="m-heading-1 border-green m-bordered">
-                                                              <h3><i class="fa fa-camera" style="margin-right:10px;" aria-hidden="true"></i>Subir más fotos</h3>
-                                                              <p> Acá podes subir más fotos para el <b><?= $proyecto->proyectos_nombre; ?></b> </p>
-
-                                                          </div>
-                                                          <div>
-                                                              <label for='upload'>Add Attachments:</label>
-                                                              <input id='upload' name="upload[]" type="file" multiple="multiple" />
                                                           </div>
 
                                                     </div>
@@ -152,16 +152,3 @@
             </div>
             <!-- END FOOTER -->
         </div>
-
-        <script type="text/javascript">
-          function set_foto_principal(proyectoId, fotoId){
-
-            var url = '<?= base_url(); ?>';
-
-            $.post( url + "Proyectos/set_principal", { proyectoId: proyectoId, fotoId: fotoId })
-              .done(function( data ) {
-
-              });
-
-          }
-        </script>

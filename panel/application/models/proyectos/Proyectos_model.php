@@ -50,7 +50,8 @@ class Proyectos_model extends CI_Model {
         {
                 $sql = "SELECT *
                         FROM items
-                        WHERE items_proyecto = '$proyectoId'";
+                        WHERE items_proyecto = '$proyectoId'
+                        AND items_activo = 1";
 
                 $query = $this->db->query($sql);
                 $result = $query->result();
@@ -62,12 +63,11 @@ class Proyectos_model extends CI_Model {
                 $this->db->update('proyectos', $this, array('proyectos_id' => $proyectoId));
 
         }
-        public function insertar_proyecto($nombre, $descripcion, $principal, $subido)
+        public function insertar_proyecto($nombre, $descripcion, $principal)
         {
                 $this->proyectos_nombre = $nombre;
                 $this->proyectos_descripcion = $descripcion;
                 $this->proyectos_principal = $principal;
-                $this->proyectos_subido = $subido;
 
                 $this->db->insert('proyectos', $this);
         }
@@ -98,6 +98,34 @@ class Proyectos_model extends CI_Model {
                 $this->db->update('proyectos', array(
                   'proyectos_activo' => 1
                 ));
+        }
+        public function borrar_item($fotoId)
+        {
+          $this->db->set('items_activo', '0');
+      		$this->db->where('items_id', $fotoId);
+      		$this->db->update('items');
+        }
+        public function get_last_id()
+        {
+          $sql = "SELECT proyectos_id
+                  FROM proyectos
+                  ORDER BY proyectos_id DESC
+                  LIMIT 1";
+
+          $query = $this->db->query($sql);
+          $result = $query->result();
+          return $result;
+        }
+        public function get_last_item_id()
+        {
+          $sql = "SELECT items_id
+                  FROM items
+                  ORDER BY items_id DESC
+                  LIMIT 1";
+
+          $query = $this->db->query($sql);
+          $result = $query->result();
+          return $result;
         }
 
 }

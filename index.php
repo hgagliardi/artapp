@@ -30,7 +30,7 @@
       .proyecto.foto4{ background-image: url(fotos/foto4.jpg); }
 
       .proyecto > .overlay{
-        position: absolute;
+        /*position: absolute;*/
         width: 100%;
         height: 100%;
         display: flex;

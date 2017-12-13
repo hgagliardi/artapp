@@ -96,7 +96,7 @@ class Proyectos extends CI_Controller {
 			$this->load->library('upload', $config);
 			$this->upload->initialize($config);
 
-			$this->subir($_FILES);
+			$files = $_FILES;
 	    $cpt = count($_FILES['upload']['name']);
 	    for($i=0; $i<$cpt; $i++)
 	    {
@@ -106,7 +106,6 @@ class Proyectos extends CI_Controller {
 	        $_FILES['upload']['error']= $files['upload']['error'][$i];
 	        $_FILES['upload']['size']= $files['upload']['size'][$i];
 
-
 					if($this->upload->do_upload('upload')){
           	$fileData = $this->upload->data();
             $uploadData[$i]['items_filename'] = $fileData['file_name'];
@@ -115,7 +114,6 @@ class Proyectos extends CI_Controller {
           }
 
 	    }
-
 
 			if(!empty($uploadData)){
 				$insert = $this->file->insert($uploadData);
@@ -160,7 +158,87 @@ class Proyectos extends CI_Controller {
 
 	}
 
-	public function set_principal(){
+	public function agregar()
+	{
+
+		error_reporting(0);
+
+		if(isset($_POST['guardar'])){
+
+			$proyectoIdArr = $this->proyectos_model->get_last_id();
+			$proyectoId = $proyectoIdArr[0]->proyectos_id;
+			$proyectoId = $proyectoId + 1;
+
+			$this->load->model('file');
+
+			$categorias = $this->input->post('proyecto_categorias');
+			$config['upload_path'] = '../fotos/' . $proyectoId;
+      $config['allowed_types'] = 'gif|jpg|png|jpeg';
+			$config['max_size']      = '0';
+    	$config['overwrite']     = FALSE;
+
+			$this->load->library('upload', $config);
+			$this->upload->initialize($config);
+
+			$files = $_FILES;
+	    $cpt = count($_FILES['upload']['name']);
+	    for($i=0; $i<$cpt; $i++)
+	    {
+	        $_FILES['upload']['name']= $files['upload']['name'][$i];
+	        $_FILES['upload']['type']= $files['upload']['type'][$i];
+	        $_FILES['upload']['tmp_name']= $files['upload']['tmp_name'][$i];
+	        $_FILES['upload']['error']= $files['upload']['error'][$i];
+	        $_FILES['upload']['size']= $files['upload']['size'][$i];
+					if($this->upload->do_upload('upload')){
+          	$fileData = $this->upload->data();
+            $uploadData[$i]['items_filename'] = $fileData['file_name'];
+						$uploadData[$i]['items_fecha'] = date("Y-m-d H:i:s");
+            $uploadData[$i]['items_proyecto'] = $proyectoId;
+          }else{
+						$error = array('error' => $this->upload->display_errors());
+					}
+
+	    }
+
+			if(!empty($uploadData)){
+				$itemIdArr = $this->proyectos_model->get_last_item_id();
+				$itemIdUlt = $itemIdArr[0]->items_id;
+				$itemIdUlt = $itemIdUlt + 1;
+				$insert = $this->file->insert($uploadData);
+				$statusMsg = $insert?'Files uploaded successfully.':'Some problem occurred, please try again.';
+			}
+
+			$this->proyectos_model->insertar_proyecto($this->input->post('proyecto_titulo'),
+																		 $this->input->post('proyecto_descripcion'),
+																		 $itemIdUlt
+																	 );
+
+			/***  Agrego categorías  ***/
+			foreach ($categorias as $c) {
+				$nuevoC = explode('-', $c);
+				$idCategoria = $nuevoC[1];
+				$this->proyectos_model->agregar_categoria($proyectoId, $idCategoria);
+			}
+
+		}
+
+		$array['proyecto']->categorias = $this->proyectos_model->get_categorias();
+
+		$this->load->view('proyectos/header');
+		$this->load->view('proyectos/header-menu');
+		$this->load->view('proyectos/sidebar');
+		$this->load->view('proyectos/index-agregar', $array);
+		$this->load->view('proyectos/footer');
+
+	}
+
+	public function borrar_item()
+	{
+		$fotoId = $_POST['fotoId'];
+		$this->proyectos_model->borrar_item($fotoId);
+	}
+	public function set_principal()
+	{
 
 		$proyectoId = $_POST['proyectoId'];
 		$fotoId = $_POST['fotoId'];

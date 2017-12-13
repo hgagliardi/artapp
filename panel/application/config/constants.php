@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 
-define('URL_SITIO', 'http://localhost/mbajour/');
+define('URL_SITIO', 'http://localhost/artapp/');
 define('URL_SITIO_FOTOS', URL_SITIO . 'fotos/');
 
 /*
